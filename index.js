@@ -54,6 +54,22 @@ app.post('/getNames',(req,res) =>{
     }
 });
 
+
+app.post('/getHost',(req,res) =>{
+    // u will get room id
+    const { roomId, playerName }  = req.body;
+    let roomsData ={}; 
+    try {
+       roomsData = JSON.parse(fs.readFileSync('./rooms.json', 'utf8'));
+    } catch (error) {
+      console.error('Error reading x.json file:', error);
+    }
+
+    if(roomsData[roomId]){
+        res.json(roomsData[roomId][0]);
+    }
+});
+
 app.listen(port, ()=>{
     console.log('listening');
 })
