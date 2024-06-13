@@ -70,6 +70,59 @@ app.post('/getHost',(req,res) =>{
     }
 });
 
+
+// if host clicks on start game 
+
+app.post('/getStatus',(req,res) =>{
+  // u will get room id
+  const { roomId, playerName }  = req.body;
+  let roomsData ={}; 
+  try {
+     roomsData = JSON.parse(fs.readFileSync('./started.json', 'utf8'));
+  } catch (error) {
+    console.error('Error reading x.json file:', error);
+  }
+
+  if(roomsData[roomId]){
+    let start=true;
+  res.json({ start });
+  }else{
+    let start=false;
+    res.json({start});
+  }
+});
+
+
+app.post('/addStart',(req,res) =>{
+  // u will get room id
+  const { roomId, playerName }  = req.body;
+  let roomsData ={}; 
+  try {
+     roomsData = JSON.parse(fs.readFileSync('./started.json', 'utf8'));
+  } catch (error) {
+    console.error('Error reading x.json file:', error);
+  }
+
+  
+  if (roomsData[roomId]) {
+    roomsData[roomId] = (playerName);
+  } else {
+    roomsData[roomId] = [playerName];
+  }
+
+  
+  fs.writeFile('started.json', JSON.stringify(roomsData), (err) => {
+    if (err) {
+      console.error('Error writing data to x.json file:', err);
+      res.status(500).send('Error writing data to x.json file');
+    } else {
+      console.log('Data successfully written to x.json file');
+      res.json({});
+    }
+  });
+});
+
+
 app.listen(port, ()=>{
     console.log('listening');
 })
