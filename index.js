@@ -93,6 +93,29 @@ app.post('/getStatus',(req,res) =>{
 });
 
 
+app.post('/exists',(req,res) =>{
+  // u will get room id
+  const { roomId, playerName }  = req.body;
+  let roomsData ={}; 
+  try {
+     roomsData = JSON.parse(fs.readFileSync('./rooms.json', 'utf8'));
+  } catch (error) {
+    console.error('Error reading x.json file:', error);
+  }
+
+  if (roomsData[roomId]) {
+    // Check if the playerName exists in the roomId array
+    if (roomsData[roomId].includes(playerName)) {
+      return res.json({ exists: true });
+    } else {
+      return res.json({ exists: false });
+    }
+  } else {
+    return res.json({ exists: false });
+  }
+});
+
+
 app.post('/addStart',(req,res) =>{
   // u will get room id
   const { roomId, playerName }  = req.body;
