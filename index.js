@@ -161,7 +161,7 @@ wss.on('connection', (ws,req) => {
   roomss[code].push(ws);
   else roomss[code] = [ws];
   ws.on('message', (message) =>{
-    // console.log(code);
+    console.log(code);
     const drawingData = JSON.parse(message);
     // console.log(drawingData);
     for(let i=0;i<roomss[code].length;++i) if(roomss[code][i] !== ws) roomss[code][i].send(JSON.stringify(drawingData));
