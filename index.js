@@ -2,12 +2,18 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const http = require('http');
+const WebSocket = require('ws');
 
+const url = require('url');
 
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+const server = http.createServer(app);
+const wss = new WebSocket.Server({server});
 
 const port = 8000;
 
@@ -102,7 +108,7 @@ app.post('/exists',(req,res) =>{
   } catch (error) {
     console.error('Error reading x.json file:', error);
   }
-
+  // console.log(roomId+" "+playerName);
   if (roomsData[roomId]) {
     // Check if the playerName exists in the roomId array
     if (roomsData[roomId].includes(playerName)) {
@@ -145,7 +151,25 @@ app.post('/addStart',(req,res) =>{
   });
 });
 
+roomss = {};
 
-app.listen(port, ()=>{
+wss.on('connection', (ws,req) => {
+  // we willl get code with each message
+  const parameters = url.parse(req.url, true);
+  const code = parameters.query.code;
+  if(roomss[code])
+  roomss[code].push(ws);
+  else roomss[code] = [ws];
+  ws.on('message', (message) =>{
+    // console.log(code);
+    const drawingData = JSON.parse(message);
+    // console.log(drawingData);
+    for(let i=0;i<roomss[code].length;++i) if(roomss[code][i] !== ws) roomss[code][i].send(JSON.stringify(drawingData));
+  })
+});
+
+
+
+server.listen(port, ()=>{
     console.log('listening');
 })
